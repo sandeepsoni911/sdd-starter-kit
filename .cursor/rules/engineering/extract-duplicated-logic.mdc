@@ -1,0 +1,43 @@
+# Extract Duplicated Logic
+
+When the same logic, constant, or UI pattern appears in more than one place (rule of three), extract it into a shared module. Duplication increases the risk of inconsistent behavior and makes future changes error-prone.
+
+## Rules
+
+1. **Hardcoded labels and messages** that appear in multiple files must be moved to a constants file in a shared layer (e.g., `domain/src/constants/` or `shared/src/constants/`).
+2. **Identical response-handling logic** (success/error branching, toast notifications) must be extracted into a shared utility or hook.
+3. **Repeated UI patterns** (confirmation dialogs, pagination controls, sortable table headers) must become shared components (e.g., `components/common/`).
+4. **Validation rules** used across multiple forms should live in the domain layer and be imported by each form, not copy-pasted.
+5. **Before creating a new utility**, search the codebase for existing implementations. Prefer extending an existing function over creating a near-duplicate.
+
+## The Rule of Three
+
+- **First occurrence:** write inline.
+- **Second occurrence:** duplicate is a smell, but acceptable.
+- **Third occurrence:** extract to a shared module before adding the third.
+
+## Examples
+
+```typescript
+// BAD — same label map in three different components
+const STATUS_LABELS = { ACTIVE: 'Active', RETIRED: 'Retired' };
+
+// GOOD — single source in a shared constants file
+export const STATUS_LABELS: Record<EntityStatus, string> = {
+  ACTIVE: 'Active',
+  RETIRED: 'Retired',
+} as const;
+```
+
+```tsx
+// BAD — duplicated confirmation dialog in every delete handler
+<Dialog open={showConfirm}>...</Dialog>
+
+// GOOD — shared component
+<ConfirmDialog
+  open={showConfirm}
+  title="Delete entity?"
+  onConfirm={handleDelete}
+  onCancel={() => setShowConfirm(false)}
+/>
+```

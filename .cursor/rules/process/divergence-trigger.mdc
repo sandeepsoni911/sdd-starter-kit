@@ -1,0 +1,19 @@
+# Divergence Trigger
+
+When you notice that the actual implementation contradicts what is documented in:
+
+- the Implementation Plan markdown for the milestone, or
+- the Engineering Context, Layer Impact, Validation Plan, or Acceptance Criteria of a ticket, or
+- a decision recorded in the Epic,
+
+always read and follow `.cursor/skills/prd-sync/SKILL.md` and apply an append-only correction on the affected artifact.
+
+Update patterns:
+
+- Implementation Plan: strikethrough the obsolete sentence, append `**Updated <YYYY-MM-DD> (PR #<n>):** <reason>`.
+- Ticket: append a bullet in `## Change Log / Clarifications`.
+- Epic: append a bullet in `## Decisions Log` (create the section if it does not exist).
+
+One divergence per execution. Ask the user when ambiguous. Never touch legacy docs.
+
+Pair with `.cursor/rules/process/source-of-truth.mdc`.

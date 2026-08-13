@@ -1,0 +1,99 @@
+# Agent Learnings Index
+
+> Curated durable operational lessons for AI agents on this project. Read on demand via `.cursor/skills/agent-learning-loop/SKILL.md`. Not always-loaded.
+>
+> **Format:** short index rows only. Detail files (if needed) live in `.cursor/learnings/`.
+
+## Active
+
+| ID | Tags | Scope | Symptom | Prevention | Evidence | Detail |
+|---|---|---|---|---|---|---|
+| _(no active entries yet)_ | | | | | | |
+
+## Candidates
+
+Learnings suggested by phase reports, PR reviews, or explicit user requests. Move to `Active` after recurrence or user confirmation.
+
+| ID | Tags | Scope | Symptom | Prevention | Evidence | Detail |
+|---|---|---|---|---|---|---|
+| _(no candidates yet)_ | | | | | | |
+
+## Promoted
+
+Learnings that have been promoted to a rule, skill, or AGENTS.md convention. Keep for traceability.
+
+| ID | Tags | Scope | Symptom | Promoted to | Date |
+|---|---|---|---|---|---|
+| _(no promotions yet)_ | | | | | |
+
+## Retired
+
+Learnings that are obsolete, superseded, or no longer useful.
+
+| ID | Tags | Scope | Original prevention | Retired reason | Date |
+|---|---|---|---|---|---|
+| _(no retirements yet)_ | | | | | |
+
+---
+
+## Entry format
+
+ID: `LRN-YYYYMMDD-short-name`
+
+Example row:
+
+```
+| LRN-20260215-nx-daemon-flag | `tooling`, `nx` | monorepo | Tests hang under CI | Pass `NX_DAEMON=false` when running non-interactively | PR #234, log excerpt | .cursor/learnings/LRN-20260215-nx-daemon-flag.md |
+```
+
+## Detail file format
+
+Create a detail file only when the prevention needs a checklist, command list, or nuanced steps. Location: `.cursor/learnings/<ID>.md`.
+
+```markdown
+# LRN-YYYYMMDD-short-name
+
+**Status:** Active
+**Tags:** ...
+**Scope:** ...
+**First observed:** YYYY-MM-DD (link to PR / ticket)
+
+## Symptom
+
+Detailed description...
+
+## Root cause
+
+...
+
+## Prevention
+
+Concrete steps / commands / code snippets.
+
+## Evidence
+
+- Link to PR
+- Link to log excerpt
+- Link to phase report entry
+
+## Related
+
+- `.cursor/rules/...` (if related)
+- `.cursor/skills/...` (if related)
+- Related learnings
+
+## Change log
+
+- YYYY-MM-DD: Created as candidate
+- YYYY-MM-DD: Promoted to Active after 2nd occurrence
+```
+
+---
+
+## Anti-bloat invariants
+
+- Keep this file short and **index-like**. If the table grows past ~30 rows, it's time to promote or retire aggressively.
+- Never add product decisions, scope, ACs, or schedule commitments here — those live in the ticketing system.
+- Prefer promoting stable lessons to focused rules/skills over growing this index.
+- Never duplicate content already in a rule. Reference it as `promoted` instead.
+- Record why the lesson exists via evidence links.

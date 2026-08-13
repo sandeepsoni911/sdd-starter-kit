@@ -1,0 +1,44 @@
+# Documentation-Code Consistency
+
+Documentation that diverges from the actual codebase is worse than no documentation — it actively misleads developers. Keep docs in sync with code as part of every PR.
+
+## Rules
+
+1. **Update `AGENTS.md` when** the project structure, tech stack, commands, or architecture changes.
+2. **Update setup docs** (README, HOW-TO-RUN, etc.) when ports, environment variables, or startup commands change.
+3. **Update OpenAPI / GraphQL specs** when endpoint paths, request/response schemas, or status codes change. The spec is the contract — it must reflect reality.
+4. **Remove references to deleted endpoints, deprecated flags, and legacy configurations.** Stale documentation is a maintenance burden.
+5. **Include doc updates in the same PR** as the code change. Do not create separate "update docs" PRs unless the scope is very large.
+6. **PR reviewers should verify** that documentation touched by the PR is still accurate after the code changes.
+
+## Checklist
+
+When making changes, ask:
+
+- [ ] Did I add/remove/rename an API endpoint? Update OpenAPI spec.
+- [ ] Did I change a startup command or port? Update setup docs.
+- [ ] Did I add a new capability/layer/module? Update `AGENTS.md` structure.
+- [ ] Did I change environment variables? Update configuration docs.
+- [ ] Did I remove a feature or flag? Remove it from all docs.
+
+## Examples
+
+```markdown
+<!-- BAD — AGENTS.md still references port 3000 but the app now runs on 4000 -->
+## Commands
+npm start   # Starts server on port 3000
+
+<!-- GOOD — reflects the actual port -->
+## Commands
+npm start   # Starts server on port 4000
+```
+
+```yaml
+# BAD — OpenAPI spec lists endpoint that was removed
+paths:
+  /api/v1/legacy-entities:
+    get:
+      summary: List legacy entities  # This endpoint was removed in PR #1234
+
+# GOOD — removed from spec when endpoint was removed
+```

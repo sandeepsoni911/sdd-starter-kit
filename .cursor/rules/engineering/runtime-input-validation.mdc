@@ -1,0 +1,42 @@
+# Runtime Input Validation
+
+Compile-time types are erased at runtime (TypeScript, Flow) or absent entirely (Python without static typing, JS). Every external input boundary (HTTP handler, message consumer, queue processor) **must** validate data at runtime before passing it to services.
+
+Patterns like `JSON.parse(...) as Type` should be caught by lint rules (`no-restricted-syntax` or equivalent).
+
+## Rules
+
+1. **Validate at the boundary, not deep inside services.** The handler is the single place where untrusted data enters the system.
+2. **Use a schema library** (Zod, AJV, class-validator, Pydantic, JSON Schema) to define expected shapes and produce clear error messages on mismatch.
+3. **Check primitive types explicitly** when a schema library is not yet available:
+   - `typeof value === 'string'` before using string methods
+   - `Array.isArray(value)` before iterating
+   - Validate enum-like values against a `Set` or constant object
+4. **Sanitize filter and query values** before appending them to database expressions or URL query strings (strip parentheses, use `encodeURIComponent` for IDs).
+
+## Examples
+
+```typescript
+// Validate with Zod at the boundary
+const parsed = createEntitySchema.safeParse(JSON.parse(event.body ?? '{}'));
+if (!parsed.success) {
+  return { statusCode: 400, body: JSON.stringify({ errors: parsed.error.issues }) };
+}
+await service.create(parsed.data);
+```
+
+```typescript
+// Guard at runtime before iteration
+if (!Array.isArray(request.filters?.ids)) {
+  throw new ValidationError('ids must be an array');
+}
+const ids = request.filters.ids.filter((id): id is string => typeof id === 'string');
+```
+
+```typescript
+// Validate enum-like values against known set
+const VALID_STATUSES = new Set(['ACTIVE', 'INACTIVE', 'RETIRED'] as const);
+if (!VALID_STATUSES.has(body.status)) {
+  throw new ValidationError(`Invalid status: ${body.status}`);
+}
+```

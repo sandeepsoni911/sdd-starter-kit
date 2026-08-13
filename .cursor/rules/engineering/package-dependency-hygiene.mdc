@@ -1,0 +1,57 @@
+# Package Dependency Hygiene
+
+Incorrect dependency categorization in `package.json` (or your language's manifest — `pyproject.toml`, `go.mod`, `pom.xml`) causes bloated bundles, version conflicts in host applications, and non-reproducible installs.
+
+## Rules (npm/yarn/pnpm — adapt to your language)
+
+1. **`peerDependencies`** — Framework libraries that the host provides at runtime:
+   - `react`, `react-dom` for React libraries
+   - Design system packages consumed by the host
+   - Any singleton-by-design library (state managers, query clients)
+2. **`devDependencies`** — Tools used only during build/test:
+   - Build tools: `vite`, `esbuild`, `rollup`, `typescript`
+   - Test frameworks: `vitest`, `jest`, `@testing-library/*`
+   - Linting and formatting: `eslint`, `prettier`
+   - Type definitions: `@types/*`
+3. **`dependencies`** — Libraries bundled into the output and not provided by the host:
+   - Only packages genuinely needed at runtime that are **not** peer dependencies
+4. **Pin versions.** Never use `"*"` for any dependency. Use `^` for flexibility within a major version.
+5. **Align versions with root `package.json`.** If the workspace root already pins a version, child packages should match or use a compatible range.
+6. **Audit on every PR** that changes `package.json`. Check that new dependencies land in the correct category.
+
+## Language-specific equivalents
+
+- **Python (`pyproject.toml`):** `dependencies` vs `[project.optional-dependencies].dev` vs `[project.optional-dependencies].test`. Pin with `~=` or explicit versions.
+- **Go (`go.mod`):** module graph is flat; version pinning is via `go.mod` + `go.sum`.
+- **Java (Maven/Gradle):** compile vs test vs runtime scope; use `<version>` locked, never `LATEST`.
+
+## Examples (npm)
+
+```json
+// BAD — react in dependencies of a publishable library
+{
+  "dependencies": {
+    "react": "^19.0.0"
+  }
+}
+
+// GOOD — react as peerDependency + devDependency (for local dev/tests)
+{
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
+```
+
+```json
+// BAD — unpinned wildcard
+{ "dependencies": { "some-lib": "*" } }
+
+// GOOD — pinned range
+{ "dependencies": { "some-lib": "^2.4.0" } }
+```

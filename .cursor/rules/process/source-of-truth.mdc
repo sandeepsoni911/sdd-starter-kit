@@ -1,0 +1,28 @@
+# Source of Truth (Append-Only)
+
+## Sources Of Truth
+
+- **Epic in `<TICKETING_SYSTEM>`** is the source of truth for product context: business outcome, scope, user stories, product decisions, product risks, and milestone-level acceptance criteria.
+- **Ticket** in `<TICKETING_SYSTEM>` is the source of truth for the per-task PRD with the 10 mandatory sections (Product Context, Acceptance Criteria, QA Notes, Engineering Context, Layer Impact, PR Plan, Validation Plan, Out Of Scope, Open Questions, Change Log / Clarifications).
+- **`capabilities/<capability>/docs/delivery/<milestone>/`** in the repo is the source of truth for technical artifacts: `implementation-plan.md`, optional `architecture.md` / `lld-<topic>.md`, optional `adr/adr-<topic>.md`, and `reports/phase-<N>.md`.
+
+## Append-Only Rule
+
+All updates to Epic, Ticket, Implementation Plan, ADRs, LLDs, and Phase Reports are append-only. Never delete, rewrite destructively, or shorten existing content. When something changes, add a new section, a new bullet in the relevant Change Log / Decisions Log, or apply the strikethrough + Updated pattern documented in `.cursor/skills/prd-sync/SKILL.md`.
+
+## What Must Not Happen
+
+- Do not create new files or directories under `capabilities/<capability>/docs/milestones/` or `capabilities/<capability>/docs/features/`. Those locations are legacy patterns.
+- Do not create per-phase feature PRD files under `capabilities/<capability>/docs/delivery/<milestone>/features/` unless the phase card explicitly calls for them. Tickets in `<TICKETING_SYSTEM>` replace them.
+- Do not silently rewrite tickets or epics. Always read first, preserve content, append.
+- Do not duplicate scope/schedule between the ticketing system and the repo.
+
+## MCP Usage
+
+Skills that read or write to the ticketing system must use the appropriate MCP server and read the corresponding tool descriptor before each `CallMcpTool` call. Never assume `project_key` — derive from the Epic key prefix or ask the user.
+
+## Companion Rules And Skills
+
+- Triggers: `.cursor/rules/process/epic-shared-trigger.mdc`, `phase-cards-trigger.mdc`, `card-edit-trigger.mdc`, `pr-plan-trigger.mdc`, `pr-open-trigger.mdc`, `phase-end-trigger.mdc`, `divergence-trigger.mdc`.
+- Invariants: `.cursor/rules/process/one-layer-per-pr.mdc`, `.cursor/rules/process/pr-size-and-stack.mdc`.
+- Skills: `epic-implementation-planner`, `phase-card-generator`, `ticket-prd-builder`, `layered-pr-planner`, `pr-readiness-check`, `phase-report-writer`, `prd-sync`.

@@ -1,0 +1,11 @@
+# Epic Shared Trigger
+
+When the user shares an Epic key, an Epic URL, or refers to an Epic and asks for an implementation plan, milestone breakdown, phase plan, delivery roadmap, or any equivalent:
+
+1. Always read and follow `.cursor/skills/epic-implementation-planner/SKILL.md`.
+2. Do not skip this skill, even if the request feels small.
+3. Do not draft phases or write any markdown plan without going through the skill.
+
+The skill ensures the Epic is read via the `<TICKETING_MCP>`, gaps are surfaced as focused questions, the Epic is updated append-only, and the Implementation Plan markdown is created in the correct location.
+
+Pair this rule with `.cursor/rules/process/source-of-truth.mdc`.

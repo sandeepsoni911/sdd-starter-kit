@@ -1,0 +1,15 @@
+---
+description: Enforces TDD/BDD workflow when editing production source code
+globs: capabilities/**/src/**/*.{ts,tsx,js,jsx,py,go,java}
+alwaysApply: false
+---
+
+# TDD/BDD Workflow Required
+
+You are editing production source code. Before writing or modifying any implementation:
+
+1. **Read** the TDD/BDD workflow skill at `.cursor/skills/tdd-bdd-workflow/SKILL.md`
+2. **Follow** the Red-Green-Refactor cycle for every change — no exceptions
+3. **Match** the layer-specific test pattern (domain, feature, or functions) from the skill
+
+Do not write implementation code before a failing test exists. Run tests at every phase (Red, Green, Refactor) using your project's test command.

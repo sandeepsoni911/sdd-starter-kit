@@ -1,0 +1,20 @@
+# Card Edit Trigger
+
+When creating a ticket or expanding an existing one (filling fields, adding sections, refining acceptance criteria, capturing engineering context), always read and follow `.cursor/skills/ticket-prd-builder/SKILL.md`.
+
+Mandatory sections in every ticket description (in this order):
+
+1. Product Context
+2. Acceptance Criteria
+3. QA Notes
+4. Engineering Context
+5. Layer Impact
+6. PR Plan
+7. Validation Plan
+8. Out Of Scope
+9. Open Questions
+10. Change Log / Clarifications
+
+Do not start implementation when any of `Product Context`, `Acceptance Criteria`, `Layer Impact`, `PR Plan`, or `Validation Plan` is missing material information. Ask focused questions instead. If only `PR Plan` is empty, missing, or stale, resolve it through `.cursor/rules/process/pr-plan-trigger.mdc` and `.cursor/skills/layered-pr-planner/SKILL.md` before writing code.
+
+Append-only on existing tickets. Read the issue first, preserve all existing description content, append new content. Pair with `.cursor/rules/process/source-of-truth.mdc`.

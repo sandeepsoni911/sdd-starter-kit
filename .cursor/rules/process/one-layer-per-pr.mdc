@@ -1,0 +1,31 @@
+# One Layer Per PR
+
+Every pull request must have exactly one primary capability layer. Adapt the layer list to your project's architecture; example set:
+
+```
+domain
+data-access
+functions
+infrastructure
+feature
+experience
+```
+
+## Rules
+
+1. The PR's primary layer is declared in the PR description (see `.github/pull_request_template.md`, section `Layer Scope`).
+2. Auxiliary edits outside the primary layer are allowed only when:
+   - they are unavoidable wiring (barrel exports, shared fixtures, generated types, etc.), and
+   - the PR description explains the justification.
+3. Contract changes follow the layer order top-down (e.g. `domain -> data-access -> functions -> infrastructure -> feature -> experience`).
+4. Cross-layer mass refactors are not allowed in a single PR. Split into a stack with one PR per layer.
+
+## Programmatic Enforcement
+
+Ideally the repo enforces layer boundaries through some form of module-boundary tooling (Nx tags + `@nx/enforce-module-boundaries`, dependency-cruiser, or custom lint rules). Lint must pass before opening a PR. `pr-readiness-check` confirms this.
+
+## Validation
+
+Validated operationally by `.cursor/skills/pr-readiness-check/SKILL.md` (which runs lint plus reviews touched files). PRs failing this rule must be split before merge.
+
+Pair with `.cursor/rules/process/pr-size-and-stack.mdc` and `.cursor/rules/process/source-of-truth.mdc`.

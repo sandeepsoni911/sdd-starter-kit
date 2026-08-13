@@ -1,0 +1,57 @@
+# Surface All Errors
+
+Every mutation and query that can fail must have its error state captured and rendered in the UI (or, for backend services, logged and returned as a proper error response). Silent failures — where an operation fails but the caller sees no feedback — are a critical UX defect.
+
+## Rules (Frontend)
+
+1. **Destructure the `error` value** from every mutation/query hook.
+2. **Render an error indicator** near the action that triggered it (inline alert, field error, or toast).
+3. **Never swallow errors in `onError` callbacks.** If you catch an error for logging or retry logic, still surface a message to the user.
+4. **Use error state from query/mutation hooks directly** instead of managing a separate `useState`.
+5. **Test the error path.** Every component test for a form or mutation should include a case where the server returns an error and verify that the UI displays a message.
+
+## Rules (Backend)
+
+1. **Every failure path returns a typed error.** No swallowed exceptions.
+2. **Errors are logged with context** (request ID, user, input snapshot with PII scrubbed).
+3. **HTTP responses map to the error type** via the centralized mapper (see `typed-error-classes.mdc`).
+
+## Examples (React + TanStack Query)
+
+```tsx
+// BAD — error state ignored
+const { mutate } = useCreateEntity();
+const handleSubmit = () => mutate(formData);
+
+// GOOD — error surfaced to user
+const { mutate, error, isError } = useCreateEntity();
+const handleSubmit = () => mutate(formData);
+
+return (
+  <form onSubmit={handleSubmit}>
+    {isError && (
+      <Alert variant="destructive">
+        {error instanceof Error ? error.message : 'Failed to create entity'}
+      </Alert>
+    )}
+    {/* form fields */}
+  </form>
+);
+```
+
+```tsx
+// BAD — onError only logs, no user feedback
+useMutation({
+  mutationFn: updateEntity,
+  onError: (error) => console.error('Update failed', error),
+});
+
+// GOOD — onError shows toast AND sets accessible error state
+useMutation({
+  mutationFn: updateEntity,
+  onError: (error) => {
+    logger.error('Update failed', { error });
+    toast.error(normalizeError(error).message);
+  },
+});
+```

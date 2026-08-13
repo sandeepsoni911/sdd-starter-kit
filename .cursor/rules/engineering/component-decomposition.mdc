@@ -1,0 +1,68 @@
+# Component Decomposition
+
+Large, monolithic components (React, Vue, Svelte, etc.) that manage state for multiple entities or concerns become difficult to maintain, test, and reason about. Decompose them into smaller, focused components.
+
+## Rules
+
+1. **A component should have a single responsibility.** If it manages state for multiple unrelated entities, split it.
+2. **Target a maximum of ~200-300 lines per component file** (excluding imports and types). If a component exceeds this, it is a candidate for decomposition.
+3. **Extract sections into dedicated components** that manage their own hooks, state, and data fetching. The parent component becomes a layout coordinator.
+4. **Colocate hooks with the component that uses them.** If a hook is only used by `SectionA`, it should not be called in the parent and passed down as props.
+5. **Prefer composition over prop drilling.** If you are passing 5+ props just to thread data from parent to grandchild, consider a context provider or moving the data fetch closer to where it is consumed.
+
+## Examples
+
+```tsx
+// BAD — monolithic root component
+function AppRoot() {
+  const properties = useProperties();
+  const methods = useMethods();
+  const results = useResults();
+  const [activeTab, setActiveTab] = useState('properties');
+  // 400+ lines managing three unrelated concerns...
+
+  return (
+    <div>
+      <PropertiesTable data={properties.data} onUpdate={properties.update} />
+      <MethodsTable data={methods.data} onUpdate={methods.update} />
+      <ResultsTable data={results.data} />
+    </div>
+  );
+}
+
+// GOOD — decomposed into focused sections
+function AppRoot() {
+  return (
+    <div>
+      <PropertiesSection />
+      <MethodsSection />
+      <ResultsSection />
+    </div>
+  );
+}
+
+function PropertiesSection() {
+  const { data, update, isLoading, error } = useProperties();
+  if (isLoading) return <PropertiesSkeleton />;
+  if (error) return <ErrorState error={error} />;
+  return <PropertiesTable data={data} onUpdate={update} />;
+}
+```
+
+```tsx
+// BAD — excessive prop drilling
+<GrandParent>
+  <Parent userName={name} userRole={role} userPermissions={perms} onAction={handler}>
+    <Child userName={name} userRole={role} userPermissions={perms} onAction={handler} />
+  </Parent>
+</GrandParent>
+
+// GOOD — context for cross-cutting concerns
+<UserProvider value={{ name, role, permissions }}>
+  <GrandParent>
+    <Parent>
+      <Child /> {/* reads from useUserContext() */}
+    </Parent>
+  </GrandParent>
+</UserProvider>
+```

@@ -1,0 +1,11 @@
+# Phase End Trigger
+
+When the user states a phase is complete, asks to wrap up a phase, asks for a phase report, or wants to anchor the next phase:
+
+1. Always read and follow `.cursor/skills/phase-report-writer/SKILL.md`.
+2. The skill verifies phase ticket statuses via the `<TICKETING_MCP>` before writing the report.
+3. If tickets are not yet closed, the skill asks the user how to disposition them (Carried Over, Deferred, Blocked).
+
+The report is created at `capabilities/<capability>/docs/delivery/<milestone>/reports/phase-<N>.md` and includes a `What Worked / What Did Not` section to feed continuous improvement of the harness. Append-only: do not overwrite existing reports.
+
+Pair with `.cursor/rules/process/source-of-truth.mdc`.

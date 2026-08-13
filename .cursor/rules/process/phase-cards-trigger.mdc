@@ -1,0 +1,11 @@
+# Phase Cards Trigger
+
+When the user asks to generate cards for a phase, create tickets for the next phase, break a phase into tasks, or start a phase:
+
+1. Always read and follow `.cursor/skills/phase-card-generator/SKILL.md`.
+2. Always start by reading the milestone Implementation Plan in `capabilities/<capability>/docs/delivery/<milestone>/implementation-plan.md`.
+3. Tickets are created via the `<TICKETING_MCP>` after reading the relevant tool descriptors. Never craft tickets bypassing the MCP.
+
+The skill enforces one card per layer when possible, derives `project_key` from the Epic prefix, and pipes each card through `ticket-prd-builder` for the 10 mandatory sections.
+
+Pair this rule with `.cursor/rules/process/source-of-truth.mdc` and `.cursor/rules/process/card-edit-trigger.mdc`.

@@ -1,0 +1,14 @@
+# PR Open Trigger
+
+Before opening a pull request, or when the user asks whether a PR is ready, always read and follow `.cursor/skills/pr-readiness-check/SKILL.md`.
+
+The skill runs a self-verification loop (max 3 iterations) grounded in external feedback:
+
+- GitHub PR files metadata via `gh pr view --json files` for size measurement (never raw `git`).
+- Your project's test/lint/typecheck commands for quality gates.
+- Ticket and Epic linkage check.
+- PR template adherence (`.github/pull_request_template.md`).
+- Acceptance Criteria coverage check.
+- Architectural boundary check via your module-boundary enforcement tooling.
+
+Pair with `.cursor/rules/process/one-layer-per-pr.mdc` and `.cursor/rules/process/pr-size-and-stack.mdc`.

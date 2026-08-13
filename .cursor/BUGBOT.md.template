@@ -1,0 +1,100 @@
+# BUGBOT — Layered PR Review Posture
+
+> Instructions for AI-assisted PR reviewers (Bugbot, Copilot for PRs, custom review bots). Copy to `.cursor/BUGBOT.md` and adapt to your architecture.
+
+Each layer gets a different review posture. Reviewers (human or AI) should:
+
+1. Identify the primary layer of the PR from `Layer Scope` in the PR description.
+2. Load the matching posture below.
+3. Apply the checks specific to that layer.
+
+---
+
+## Universal checks (all layers)
+
+- [ ] PR follows the template (`.github/pull_request_template.md`).
+- [ ] PR links to a ticket and an epic.
+- [ ] PR size within ~400 impl lines OR has a stack rationale.
+- [ ] All CI checks green (test, lint, typecheck).
+- [ ] Layer scope declared and matches touched files.
+- [ ] Acceptance Criteria explicitly mapped in the PR description.
+- [ ] Change Log entry appended to affected specs (if divergence).
+
+---
+
+## Domain layer
+
+- [ ] No framework imports (no React, no Express, no AWS SDK, no DB clients).
+- [ ] Types match the Technical Solution Design.
+- [ ] Business rules are pure functions (no side effects).
+- [ ] Validation is present at every entry point.
+- [ ] Constants are extracted into dedicated files.
+- [ ] 100% test coverage on business rules (they're pure — no excuse).
+
+## Data-access layer
+
+- [ ] Repository interface defined + implementation is separate.
+- [ ] All queries pageable when the dataset can grow.
+- [ ] No `SELECT *` (or DynamoDB `SCAN` without filter + pagination).
+- [ ] Idempotent writes where semantics allow.
+- [ ] Timeouts / retries configured.
+- [ ] Contract tests against a local DB (or LocalStack for DynamoDB).
+
+## Functions / handlers layer
+
+- [ ] Handler is thin (≤ 50 lines).
+- [ ] Input validation with a schema library.
+- [ ] Typed errors thrown from services; mapped to HTTP codes centrally.
+- [ ] No business logic in the handler.
+- [ ] Observability: structured logs, request ID, timing.
+- [ ] No hardcoded secrets or auth bypass.
+
+## Infrastructure layer
+
+- [ ] IaC formatted (Terraform: `terraform fmt`, Pulumi: `prettier`, CDK: `cdk synth`).
+- [ ] No wildcard IAM policies.
+- [ ] Sensitive resources have deletion protection.
+- [ ] Env vars documented in the affected module's AGENTS.md.
+- [ ] Cost implication acknowledged in PR description if resource size changes.
+
+## Feature (UI) layer
+
+- [ ] Uses design system components (no re-invented `Button`, `Modal`, etc.).
+- [ ] Design tokens used (no hex colors, no hardcoded spacing).
+- [ ] Accessibility: ARIA labels, keyboard nav, focus visible.
+- [ ] Error states rendered (see `surface-all-errors.mdc`).
+- [ ] Loading + empty states present.
+- [ ] No inline JSX handlers with block bodies (see `no-inline-jsx-handlers.mdc`).
+- [ ] Component under ~200 lines; decomposed if exceeds.
+- [ ] Types in dedicated files if exported.
+- [ ] Component tests using Testing Library (queries by role, not by test-id when possible).
+
+## Experience (dev shell) layer
+
+- [ ] Disposable — no durable product logic added here.
+- [ ] Mock API stubs match the real API contract.
+- [ ] Not deployed to production.
+
+---
+
+## Red flags — reject the PR
+
+- Non-primary-layer edits without justification in PR description.
+- Test file changes without a corresponding source file change (or vice versa).
+- New dependencies added without an ADR or rationale.
+- Auth / authz logic in a UI component (should be in `functions/`).
+- Business logic in a `handler` (should be in `services/`).
+- `error.message.includes(...)` patterns.
+- `JSON.parse(...) as Type` patterns.
+- Hex color literals in style props.
+- New AGENTS.md-level convention discussed in PR review not documented.
+
+---
+
+## Escalation
+
+If the PR touches multiple layers or introduces a new pattern:
+
+- Reviewer should tag the tech lead.
+- Reviewer should ask "should this be an ADR?"
+- Do not merge without tech lead sign-off.

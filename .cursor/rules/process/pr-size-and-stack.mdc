@@ -1,0 +1,40 @@
+# PR Size And Stack
+
+## Limit
+
+Implementation lines per pull request must stay around 400 or below. Beyond that, split the work into a coherent stack of dependent PRs.
+
+## Implementation Lines Defined
+
+"Implementation" means production code in the PR's primary layer. The size budget excludes:
+
+- Tests (`**/*.test.*`, `**/*.spec.*`, `**/__tests__/**`, `**/__mocks__/**`)
+- Fixtures (`**/fixtures/**`)
+- Snapshots and generated files (`**/*.generated.*`, `**/__snapshots__/**`)
+- API test collections (Bruno/Postman/Insomnia folders)
+- Markdown, JSON, YAML, and other config files
+
+Tests-only or docs-only PRs do not trigger the limit, but should still be split when reviewability suffers.
+
+## Measurement
+
+Always use `gh` or the GitHub MCP. Raw `git` CLI commands are forbidden in this workflow.
+
+```bash
+gh pr view <PR_NUMBER> --json files --jq '.files[] | "\(.additions)\t\(.deletions)\t\(.path)"'
+```
+
+Filter the returned file metadata to the implementation files defined above and sum the `additions` values. Without an open PR, estimate from the changed files; if estimation is uncertain, ask the user.
+
+## Stack Rules
+
+- Each PR in the stack must be reviewable on its own.
+- Stacks may have sequential dependencies. Circular dependencies are forbidden.
+- Stacks should not introduce flaky behavior between merges.
+- The first PR in the stack lands the foundation (types, contracts); later PRs land consumers.
+
+## Validation
+
+Operationally enforced by `.cursor/skills/pr-readiness-check/SKILL.md` (size + iteration loop with external feedback).
+
+Pair with `.cursor/rules/process/one-layer-per-pr.mdc` and `.cursor/rules/process/source-of-truth.mdc`.

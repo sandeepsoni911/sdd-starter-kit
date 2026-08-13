@@ -1,0 +1,58 @@
+# Handler Thin, Services Thick
+
+Route/HTTP handlers (Lambda, Express, Fastify, Next.js API routes, controllers, etc.) must be thin orchestration layers. Business logic, validation beyond schema parsing, data transformations, and external service calls belong in dedicated service classes/modules.
+
+## Rules
+
+1. **Handlers are limited to**:
+   - Parsing and validating the incoming event (schema validation)
+   - Calling one or two service methods
+   - Mapping the service result to an HTTP response
+2. **Handlers must not exceed ~50 lines** (excluding imports and type definitions).
+3. **Business rules live in services.** If a handler contains `if/else` branches based on entity state, domain lookups, or conditional transformations, that logic must move to a service.
+4. **Services are independently testable.** They accept typed inputs and return typed outputs with no knowledge of HTTP, framework events, or transport.
+5. **One service method per business operation.** Avoid god-methods that handle create, update, and delete in a single function.
+
+## Examples
+
+```typescript
+// BAD — handler contains business logic
+export const handler = async (event) => {
+  const body = JSON.parse(event.body!);
+  const existing = await repository.findById(body.id);
+  if (existing && existing.status === 'ACTIVE') {
+    // 20 lines of transformation logic...
+    const merged = { ...existing, ...body, updatedAt: new Date().toISOString() };
+    await repository.update(merged);
+    return { statusCode: 200, body: JSON.stringify(merged) };
+  }
+  // more branching...
+};
+
+// GOOD — handler delegates to service
+export const handler = async (event) => {
+  const request = parseAndValidate(updateEntitySchema, event.body);
+  const result = await entityService.update(request);
+  return ok(result);
+};
+```
+
+```typescript
+// Service encapsulates all business logic
+export class EntityService {
+  constructor(private readonly repository: EntityRepository) {}
+
+  async update(request: UpdateEntityRequest): Promise<Entity> {
+    const existing = await this.repository.findByIdOrThrow(request.id);
+    this.validateTransition(existing.status, request.status);
+    const merged = this.applyUpdate(existing, request);
+    return this.repository.save(merged);
+  }
+
+  private validateTransition(from: EntityStatus, to?: EntityStatus): void {
+    if (to && !ALLOWED_TRANSITIONS[from]?.includes(to)) {
+      throw new ValidationError(`Cannot transition from ${from} to ${to}`);
+    }
+  }
+}
+```

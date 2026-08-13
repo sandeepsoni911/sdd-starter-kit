@@ -1,0 +1,17 @@
+# PR Plan Trigger
+
+When the user starts implementing a ticket or asks how to split work across PRs:
+
+1. If the ticket's `## PR Plan` section is empty, missing, or stale, always read and follow `.cursor/skills/layered-pr-planner/SKILL.md` before writing code.
+2. The skill produces a per-layer PR plan with stack rationale when the estimated implementation lines exceed ~400.
+3. The plan is appended to the ticket in append-only fashion.
+
+An empty, missing, or stale `## PR Plan` is resolved by this trigger; it is not a permanent blocker once the layered plan is appended to the ticket.
+
+Layer order for contract changes (adapt to your project's architecture):
+
+```
+domain -> data-access -> functions -> infrastructure -> feature -> experience
+```
+
+Pair with `.cursor/rules/process/one-layer-per-pr.mdc` and `.cursor/rules/process/pr-size-and-stack.mdc`.

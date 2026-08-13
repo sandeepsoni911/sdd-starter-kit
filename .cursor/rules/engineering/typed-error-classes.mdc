@@ -1,0 +1,58 @@
+# Typed Error Classes
+
+Use custom Error subclasses for domain-specific failures. Classifying errors by `instanceof` (or the language's equivalent) is robust, predictable, and not affected by message changes.
+
+String-matching on `.message.includes()` should be caught by lint rules.
+
+## Rules
+
+1. **Define custom Error classes** for each failure category: `ValidationError`, `NotFoundError`, `ForbiddenError`, `ConflictError`, etc.
+2. **Throw typed errors from services and parsers**, not from handlers.
+3. **Classify errors with `instanceof`** in the handler or error-mapping layer to determine HTTP status codes.
+4. **All custom errors must extend `Error`** and set `this.name` for serialization and logging.
+5. **Map typed errors to HTTP status codes** in a single, centralized function.
+
+## Error Class Template
+
+```typescript
+export class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
+export class NotFoundError extends Error {
+  constructor(resource: string, id: string) {
+    super(`${resource} with id ${id} not found`);
+    this.name = 'NotFoundError';
+  }
+}
+
+export class ForbiddenError extends Error {
+  constructor(message = 'Access denied') {
+    super(message);
+    this.name = 'ForbiddenError';
+  }
+}
+```
+
+## Centralized Error Mapping
+
+```typescript
+function mapErrorToResponse(error: unknown) {
+  if (error instanceof ValidationError) {
+    return { statusCode: 400, body: JSON.stringify({ message: error.message }) };
+  }
+  if (error instanceof NotFoundError) {
+    return { statusCode: 404, body: JSON.stringify({ message: error.message }) };
+  }
+  if (error instanceof ForbiddenError) {
+    return { statusCode: 403, body: JSON.stringify({ message: error.message }) };
+  }
+  logger.error('Unhandled error', { error });
+  return { statusCode: 500, body: JSON.stringify({ message: 'Internal server error' }) };
+}
+```
+
+Apply the equivalent pattern in your language (Python: custom exception classes + explicit `except`; Go: sentinel errors + `errors.Is`; Java: exception hierarchy + `instanceof`).

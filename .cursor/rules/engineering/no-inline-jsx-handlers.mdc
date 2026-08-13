@@ -1,0 +1,58 @@
+---
+description: React-specific — block-body arrow functions in JSX props must be extracted to named handlers
+globs: "**/*.{tsx,jsx}"
+alwaysApply: false
+---
+
+# No Inline JSX Handlers
+
+This rule targets React/JSX code. Should be enforced by `no-restricted-syntax` in ESLint (blocks arrow functions with block bodies `{ }` in JSX props). `react/jsx-no-bind` still bans `.bind()` and `function` expressions.
+
+## What Is Allowed
+
+Single-expression arrow functions — no curly braces — are fine:
+
+```tsx
+<Card onClick={() => handleItemClick(item.id)} />
+<Switch onCheckedChange={() => toggle(!value)} />
+<Controller render={({ field }) => (<Input value={field.value} />)} />
+```
+
+## What Is Blocked
+
+Arrow functions with a block body (`{ }`) in JSX props. These must be extracted into named functions at the component scope:
+
+```tsx
+// BAD — block body in JSX prop
+<Sheet onOpenChange={open => {
+  if (!open) {
+    mutation.reset();
+    setSheetState('none');
+  }
+}} />
+
+// GOOD — extracted to a named function
+const handleSheetClose = (open: boolean) => {
+  if (!open) {
+    mutation.reset();
+    setSheetState('none');
+  }
+};
+
+<Sheet onOpenChange={handleSheetClose} />
+```
+
+## Naming Convention
+
+Name handlers descriptively using the `handle` prefix: `handlePrevClick`, `handleNameChange`, `handleFormSubmit`. When a handler needs arguments from a loop, define the outer function and call it from a thin wrapper:
+
+```tsx
+const handleItemClick = (itemId: string) => {
+  setSelected(itemId);
+  navigate(`/items/${itemId}`);
+};
+
+{items.map((item) => (
+  <Card key={item.id} onClick={() => handleItemClick(item.id)} />
+))}
+```

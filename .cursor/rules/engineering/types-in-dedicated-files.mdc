@@ -1,0 +1,62 @@
+---
+description: Keep component files focused — move exported interfaces and types to dedicated type files
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Types in Dedicated Files
+
+Component files (`.tsx`) should keep type declarations **private by default**. If a type needs to be exported, it must live in a dedicated type file — not in the component.
+
+## Rules
+
+- Types and interfaces that are **not exported** may stay in the component file where they are used.
+- As soon as a type is **exported** (consumed by other files), move it to the central `types/` directory (or your project's convention).
+- Component files should import shared types with `import type { ... }` from the types file.
+- Configuration-shape interfaces are always shared — they belong in a types file, never inline in a component.
+
+## Examples
+
+```tsx
+// OK — private type stays in the component file
+interface FilterPanelProps {
+  options: string[];
+  selected: string;
+  onChange: (next: string) => void;
+}
+
+export function FilterPanel({ options, selected, onChange }: FilterPanelProps) {
+  return <div>{/* ... */}</div>;
+}
+```
+
+```tsx
+// WRONG — exported type defined inline in a component file
+export interface FilterConfig {
+  options: string[];
+  selected: string;
+  onChange: (next: string) => void;
+}
+
+export function FilterPanel({ config }: { config: FilterConfig }) {
+  return <div>{/* ... */}</div>;
+}
+```
+
+```tsx
+// CORRECT — exported type lives in a dedicated types file
+
+// types/filter.ts
+export interface FilterConfig {
+  options: string[];
+  selected: string;
+  onChange: (next: string) => void;
+}
+
+// components/FilterPanel.tsx
+import type { FilterConfig } from '../types/filter';
+
+export function FilterPanel({ config }: { config: FilterConfig }) {
+  return <div>{/* ... */}</div>;
+}
+```

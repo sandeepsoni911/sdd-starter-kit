@@ -1,0 +1,15 @@
+# Agent Learning Loop Trigger
+
+Read and follow `.cursor/skills/agent-learning-loop/SKILL.md` when:
+
+- the same root-cause mistake or validation failure appears more than once;
+- the user corrects a material assumption the agent should not repeat;
+- PR readiness, phase reporting, conflict triage, MCP, GitHub, IaC, or cloud setup exposes durable workflow friction;
+- the user explicitly asks to record, promote, retire, or consult an agent learning.
+
+Anti-bloat invariants:
+
+- Keep this rule short.
+- Do not import or inline `.cursor/LEARNINGS.md`.
+- Do not import or inline `.cursor/learnings/*`.
+- Only the skill loads learning index/detail content, and only on demand.
