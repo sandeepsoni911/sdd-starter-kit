@@ -147,6 +147,4 @@ This kit is a living artifact. When you finish a project:
 
 See `docs/08-gap-analysis.md` for the audit method.
 
-Reach out to me if you have any questions or feedback on Sandeep.Soni@thoughtworks.com
 
-Blog Post Link : https://thoughtworks.workvivo.com/comments/update/4435828
