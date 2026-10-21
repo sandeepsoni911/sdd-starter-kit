@@ -133,7 +133,7 @@ The kit ships with defaults (GitHub, Figma, Zoom, Jira via Atlassian MCP, `gh` C
 ## Credits
 
 - **Sandeep Soni** — author of this kit. Built the SuperSpec method (PRD → Tech Solution → UI Strategy → Implementation Phases, 15-step milestone) and the "AI Orchestration Playbook" 5-layer pattern (Tool Surface → Behavioral Standards → Knowledge Management → Operating Cadence → Leadership) while tech-leading the Client Project (Mar–Jul 2026), then refactored the whole thing into this portable, tech-agnostic form.
-- **The Project pod** — proving ground for these patterns (Mar–Jul 2026).
+
 
 ---
 
